@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation"; // Hook to detect active route
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { signIn, signOut, useSession } from "next-auth/react";
 export default function Navbar() {
+  const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname(); // Get current path
@@ -57,12 +58,21 @@ export default function Navbar() {
               {label}
             </Link>
           ))}
-          <button
-            onClick={handleAuth}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-          >
-            Sign In
-          </button>
+          {session ? (
+            <button
+              onClick={() => signOut()}
+              className="bg-red-600 px-4 py-2 rounded-md hover:bg-red-700"
+            >
+              Sign Out
+            </button>
+          ) : (
+            <button
+              onClick={() => signIn()} // This triggers the sign-in flow
+              className="bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-700"
+            >
+              Sign In
+            </button>
+          )}
         </div>
 
         {/* Mobile Menu Button */}

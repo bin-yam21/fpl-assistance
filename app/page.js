@@ -1,8 +1,37 @@
 "use client";
+import LatestNews from "./components/LatestNews";
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const { data: session } = useSession(); // Get user session
+  const router = useRouter(); // Router for navigation
+
+  const handleGetStarted = () => {
+    if (session) {
+      router.push("/dashboard"); // Redirect to dashboard if logged in
+    } else {
+      router.push("/signin"); // Redirect to sign-in page if not logged in
+    }
+  };
+  const cardVariants = {
+    offscreen: {
+      x: -100, // Start offscreen to the left
+      opacity: 0,
+    },
+    onscreen: {
+      x: 0, // Move to the center
+      opacity: 1,
+      transition: {
+        type: "spring",
+        bounce: 0.4,
+        duration: 0.8,
+      },
+    },
+  };
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
@@ -16,7 +45,11 @@ export default function Home() {
             Get AI-powered insights, live updates, and expert recommendations to
             optimize your FPL team.
           </p>
-          <button className="mt-6 px-6 py-3 bg-green-500 text-lg font-semibold rounded-lg hover:bg-green-600 transition">
+          {/* Conditional Redirect Button */}
+          <button
+            onClick={handleGetStarted}
+            className="mt-6 px-6 py-3 bg-green-500 text-lg font-semibold rounded-lg hover:bg-green-600 transition"
+          >
             Get Started
           </button>
         </div>
@@ -34,34 +67,57 @@ export default function Home() {
         </div>
       </section>
       {/* Highlight Section */}
-      <section className="px-8 py-16 bg-gray-100 text-gray-800 text-center">
-        <h2 className="text-3xl font-bold mb-6">Why Choose FPL Assistant?</h2>
-        <div className="flex flex-col md:flex-row justify-center gap-8">
-          <div className="bg-white p-6 rounded-lg shadow-md w-full md:w-1/3">
-            <h3 className="text-xl font-semibold mb-2">
+      <section className="px-8 py-24 bg-gray-100 text-gray-800 text-center">
+        <h2 className="text-4xl font-bold mb-12">Why Choose FPL Assistant?</h2>
+        <div className="flex overflow-x-auto gap-8 pb-8">
+          {/* Card 1 */}
+          <motion.div
+            className="bg-white p-8 rounded-lg shadow-md min-w-[300px] flex-shrink-0"
+            variants={cardVariants}
+            initial="offscreen"
+            whileInView="onscreen"
+            viewport={{ once: true, amount: 0.5 }}
+          >
+            <h3 className="text-2xl font-semibold mb-4">
               🔥 AI-Powered Insights
             </h3>
-            <p>
+            <p className="text-lg">
               Get player recommendations and transfer suggestions based on
               real-time data.
             </p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md w-full md:w-1/3">
-            <h3 className="text-xl font-semibold mb-2">📊 Advanced Stats</h3>
-            <p>
+          </motion.div>
+          {/* Card 2 */}
+          <motion.div
+            className="bg-white p-8 rounded-lg shadow-md min-w-[300px] flex-shrink-0"
+            variants={cardVariants}
+            initial="offscreen"
+            whileInView="onscreen"
+            viewport={{ once: true, amount: 0.5 }}
+          >
+            <h3 className="text-2xl font-semibold mb-4">📊 Advanced Stats</h3>
+            <p className="text-lg">
               Analyze player performance with xG, xA, and other detailed
               metrics.
             </p>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-md w-full md:w-1/3">
-            <h3 className="text-xl font-semibold mb-2">⚽ Live Updates</h3>
-            <p>
+          </motion.div>
+          {/* Card 3 */}
+
+          <motion.div
+            className="bg-white p-8 rounded-lg shadow-md min-w-[300px] flex-shrink-0"
+            variants={cardVariants}
+            initial="offscreen"
+            whileInView="onscreen"
+            viewport={{ once: true, amount: 0.5 }}
+          >
+            <h3 className="text-2xl font-semibold mb-4">⚽ Live Updates</h3>
+            <p className="text-lg">
               Track live scores, injuries, and bonus points to stay ahead of the
               competition.
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
+      <LatestNews />
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white text-center p-6 mt-auto">
