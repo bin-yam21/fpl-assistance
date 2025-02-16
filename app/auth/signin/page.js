@@ -1,13 +1,15 @@
-"use client";
+"use client"; // This ensures the component is client-side
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation"; // For navigation in the app directory
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
+  const router = useRouter(); // Use useRouter for client-side routing
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -20,10 +22,12 @@ export default function SignInPage() {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    // Call your sign-up API endpoint here
-    console.log("Signing up with", email, password);
-    // After registration, you might want to redirect or auto-sign in
-    setIsSignUp(false);
+    // Handle signup logic here
+    setIsSignUp(false); // Optionally, change the state after signup
+  };
+
+  const navigateToSignup = () => {
+    router.push("/auth/signup"); // Navigate to the signup page
   };
 
   return (
@@ -83,7 +87,7 @@ export default function SignInPage() {
             <p>
               Do not have an account?{" "}
               <button
-                onClick={() => setIsSignUp(true)}
+                onClick={navigateToSignup} // Navigate to signup page
                 className="text-blue-600 hover:underline"
               >
                 Sign Up

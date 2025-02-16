@@ -1,14 +1,14 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-// Database connection file
 import bcrypt from "bcryptjs";
-import clientPromise from "../../../../lib/mongodb";
+import connectDb from "../../../../lib/db"; // Your custom Mongoose connection
+
+// Import the Mongoose User model
+import User from "../../../../models/User";
 
 // Configure NextAuth
 export const authOptions = {
-  adapter: MongoDBAdapter(clientPromise), // MongoDB adapter for session persistence
   providers: [
     // Google OAuth
     GoogleProvider({
@@ -29,14 +29,19 @@ export const authOptions = {
       },
       async authorize(credentials) {
         const { email, password } = credentials;
-        const db = (await clientPromise).db();
-        const user = await db.collection("users").findOne({ email });
 
+        // Connect to DB using Mongoose
+        await connectDb();
+
+        // Find the user in the database
+        const user = await User.findOne({ email });
         if (!user) throw new Error("User not found!");
+
+        // Compare the password with the hashed one stored in the database
         const isValidPassword = await bcrypt.compare(password, user.password);
         if (!isValidPassword) throw new Error("Invalid credentials!");
 
-        return user;
+        return user; // Return the user object if valid
       },
     }),
   ],
@@ -50,9 +55,6 @@ export const authOptions = {
       return session;
     },
   },
-  // pages: {
-  //   signIn: "/auth/signin", // Custom sign-in page route
-  // },
 };
 
 const handler = NextAuth(authOptions);

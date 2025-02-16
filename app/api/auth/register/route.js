@@ -1,30 +1,51 @@
-// pages/api/auth/register.js
-import { hashPassword } from "../../lib/auth"; // Utility function to hash password
-import User from "../../models/User";
+// app/api/auth/register/route.js
+import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
+import connectDb from "../../../../lib/db"; // Importing mongoose DB connection
+import User from "../../../../models/User"; // Importing the User model
 
-export default async function handler(req, res) {
-  if (req.method === "POST") {
-    const { email, password } = req.body;
+export async function POST(request) {
+  try {
+    const { email, password } = await request.json();
 
-    try {
-      // Check if the user already exists
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(422).json({ error: "User already exists" });
-      }
-
-      // Create a new user with hashed password
-      const user = new User({
-        email,
-        password: await hashPassword(password),
-      });
-      await user.save();
-
-      return res.status(201).json({ message: "User registered successfully" });
-    } catch (error) {
-      return res.status(500).json({ error: "Registration failed" });
+    // Validate inputs
+    if (!email || !password) {
+      return NextResponse.json(
+        { error: "Email and password required" },
+        { status: 400 }
+      );
     }
-  } else {
-    res.status(405).json({ error: "Method Not Allowed" });
+
+    // Connect to the database using Mongoose
+    await connectDb();
+
+    // Check if the user already exists using the User model
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return NextResponse.json(
+        { error: "User already exists" },
+        { status: 400 }
+      );
+    }
+
+    // Hash the password using bcrypt
+    const hashedPassword = await bcrypt.hash(password, 10); // 10 salt rounds
+
+    // Create new user with hashed password
+    const newUser = new User({
+      email,
+      password: hashedPassword,
+    });
+
+    // Save the new user to the database
+    await newUser.save();
+
+    return NextResponse.json(
+      { message: "User created successfully" },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Signup error", error);
+    return NextResponse.json({ error: "Error creating user" }, { status: 500 });
   }
 }
