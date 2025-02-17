@@ -7,6 +7,7 @@ const PlayerSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   position: { type: Number, required: true },
   points: { type: Number, required: true },
+  active: { type: Boolean, required: true, default: true }, // Add active status
 });
 
 export default mongoose.models.Player || mongoose.model("Player", PlayerSchema);
