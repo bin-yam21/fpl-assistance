@@ -2,6 +2,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Providers from "./Provider";
+// import scheduleFetch from "@/lib/scheduler";
+import LiveMatchUpdater from "./components/LiveMatchUpdater";
+// import { useEffect } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +33,8 @@ export default function RootLayout({ children }) {
           <main className="pt-20 md:pt-16">
             {" "}
             {/* Adjust padding to avoid overlap */}
+            <LiveMatchUpdater />{" "}
+            {/* Runs live match updates in the background */}
             {children}
           </main>
         </Providers>
