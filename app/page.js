@@ -14,7 +14,7 @@ export default function Home() {
     if (session) {
       router.push("/dashboard"); // Redirect to dashboard if logged in
     } else {
-      router.push("/signin"); // Redirect to sign-in page if not logged in
+      router.push("/auth/signin"); // Redirect to sign-in page if not logged in
     }
   };
   const cardVariants = {

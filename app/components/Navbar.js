@@ -1,27 +1,34 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // Hook to detect active route
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { signIn, signOut, useSession } from "next-auth/react";
+
 export default function Navbar() {
   const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const pathname = usePathname(); // Get current path
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50); // Shrinks when scrolled 50px down
+      setIsScrolled(window.scrollY > 50);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleAuth = () => {
-    alert("Auth functionality coming soon!");
+  const handleSignIn = async () => {
+    try {
+      router.push("/auth/signin"); // Fallback if signIn() fails
+      // await signIn();
+    } catch (error) {
+      console.error("Sign-in failed:", error);
+    }
   };
 
   const navLinks = [
@@ -67,7 +74,7 @@ export default function Navbar() {
             </button>
           ) : (
             <button
-              onClick={() => signIn()} // This triggers the sign-in flow
+              onClick={handleSignIn}
               className="bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-700"
             >
               Sign In
@@ -108,7 +115,7 @@ export default function Navbar() {
               ))}
               <li>
                 <button
-                  onClick={handleAuth}
+                  onClick={handleSignIn}
                   className="block w-full p-2 text-white bg-blue-600 rounded hover:bg-blue-700"
                 >
                   Sign In
